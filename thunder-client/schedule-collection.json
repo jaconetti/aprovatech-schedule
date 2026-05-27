@@ -1,0 +1,258 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Schedule Service - AprovaTech",
+  "dateExported": "2026-05-20T16:30:00.000Z",
+  "version": "1.2",
+  "folders": [
+    {
+      "_id": "plans_folder",
+      "name": "Plans",
+      "containerId": "",
+      "created": "2026-05-20T16:30:00.000Z",
+      "sortNum": 10000
+    },
+    {
+      "_id": "items_folder",
+      "name": "Items",
+      "containerId": "",
+      "created": "2026-05-20T16:30:00.000Z",
+      "sortNum": 20000
+    }
+  ],
+  "requests": [
+    {
+      "_id": "health_check",
+      "colId": "schedule_collection",
+      "containerId": "",
+      "name": "Health Check",
+      "url": "{{base_url}}/health",
+      "method": "GET",
+      "sortNum": 5000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": []
+    },
+    {
+      "_id": "create_plan",
+      "colId": "schedule_collection",
+      "containerId": "plans_folder",
+      "name": "Criar Plano",
+      "url": "{{base_url}}/plans",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Plano de Estudos - INSS 2026\",\n  \"daily_hours\": 4,\n  \"start_date\": \"2026-05-21\",\n  \"end_date\": \"2026-08-20\",\n  \"disciplines\": [\n    \"Direito Administrativo\",\n    \"Direito Constitucional\",\n    \"Português\",\n    \"Raciocínio Lógico\"\n  ]\n}",
+        "form": []
+      }
+    },
+    {
+      "_id": "list_plans",
+      "colId": "schedule_collection",
+      "containerId": "plans_folder",
+      "name": "Listar Planos",
+      "url": "{{base_url}}/plans",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "get_plan",
+      "colId": "schedule_collection",
+      "containerId": "plans_folder",
+      "name": "Obter Plano Específico",
+      "url": "{{base_url}}/plans/{{plan_id}}",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "update_plan",
+      "colId": "schedule_collection",
+      "containerId": "plans_folder",
+      "name": "Atualizar Plano",
+      "url": "{{base_url}}/plans/{{plan_id}}",
+      "method": "PATCH",
+      "sortNum": 40000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Plano INSS - Revisado\",\n  \"daily_hours\": 5\n}",
+        "form": []
+      }
+    },
+    {
+      "_id": "delete_plan",
+      "colId": "schedule_collection",
+      "containerId": "plans_folder",
+      "name": "Deletar Plano",
+      "url": "{{base_url}}/plans/{{plan_id}}",
+      "method": "DELETE",
+      "sortNum": 50000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "list_items",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Listar Itens do Cronograma",
+      "url": "{{base_url}}/items?plan_id={{plan_id}}",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "list_items_by_date",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Listar Itens por Data",
+      "url": "{{base_url}}/items?plan_id={{plan_id}}&date=2026-05-21",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "get_item",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Obter Item Específico",
+      "url": "{{base_url}}/items/{{item_id}}",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "complete_item",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Marcar Item como Concluído",
+      "url": "{{base_url}}/items/{{item_id}}/complete",
+      "method": "PATCH",
+      "sortNum": 40000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "uncomplete_item",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Desmarcar Item",
+      "url": "{{base_url}}/items/{{item_id}}/uncomplete",
+      "method": "PATCH",
+      "sortNum": 50000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    },
+    {
+      "_id": "update_item",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Atualizar Item",
+      "url": "{{base_url}}/items/{{item_id}}",
+      "method": "PATCH",
+      "sortNum": 60000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"topic\": \"Direitos Fundamentais - Capítulo 2\",\n  \"duration_minutes\": 50\n}",
+        "form": []
+      }
+    },
+    {
+      "_id": "delete_item",
+      "colId": "schedule_collection",
+      "containerId": "items_folder",
+      "name": "Deletar Item",
+      "url": "{{base_url}}/items/{{item_id}}",
+      "method": "DELETE",
+      "sortNum": 70000,
+      "created": "2026-05-20T16:30:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{bearer_token}}"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "headers": [],
+    "tests": []
+  }
+}

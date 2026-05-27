@@ -1,0 +1,24 @@
+{
+  "client": "Thunder Client",
+  "environmentName": "Schedule Service - Local",
+  "dateExported": "2026-05-20T16:30:00.000Z",
+  "version": "1.0",
+  "variables": [
+    {
+      "name": "base_url",
+      "value": "http://localhost:5002"
+    },
+    {
+      "name": "bearer_token",
+      "value": "COLE_SEU_TOKEN_AQUI"
+    },
+    {
+      "name": "plan_id",
+      "value": "uuid-do-plano-aqui"
+    },
+    {
+      "name": "item_id",
+      "value": "uuid-do-item-aqui"
+    }
+  ]
+}
