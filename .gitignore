@@ -37,3 +37,9 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Local scripts (never commit)
+*.bat
+*.ps1
+**/scripts/get-token.js
+

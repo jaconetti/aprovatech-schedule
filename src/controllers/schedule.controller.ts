@@ -122,10 +122,10 @@ export async function createPlan(
     // Gerar cronograma automático
     const scheduleItems = generateSchedule({
       planId: plan.id,
-      subjects,
-      weeklyHours: weekly_hours,
-      targetDate: new Date(target_date),
+      disciplines: subjects.map((subject) => subject.name),
+      dailyHours: weekly_hours / 5,
       startDate: new Date(),
+      endDate: new Date(target_date),
     })
 
     // Inserir itens do cronograma
