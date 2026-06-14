@@ -21,6 +21,9 @@ export const config = {
   },
   port: process.env.PORT || 5002,
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:5000']
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+      'http://localhost:5000',
+      'https://aprovatech-web.vercel.app',
+    ]
   }
 }

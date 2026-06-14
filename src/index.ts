@@ -34,8 +34,13 @@ app.use('/items', itemsRoutes)
 // Error handler (deve ser o último middleware)
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-  console.log(`📅 Schedule Service running on port ${PORT}`)
-  console.log(`📡 Health check: http://localhost:${PORT}/health`)
-})
+// Só inicia o servidor local fora de produção (em produção a Vercel gerencia)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`📅 Schedule Service running on port ${PORT}`)
+    console.log(`📡 Health check: http://localhost:${PORT}/health`)
+  })
+}
+
+export default app
 
