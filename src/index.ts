@@ -7,6 +7,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import plansRoutes from './routes/plans.routes'
 import itemsRoutes from './routes/items.routes'
+import concursosRoutes from './routes/concursos.routes'
 import { errorHandler } from './middleware/errorHandler'
 
 const app: Application = express()
@@ -30,6 +31,7 @@ app.get('/health', (_req, res) => {
 // Routes
 app.use('/plans', plansRoutes)
 app.use('/items', itemsRoutes)
+app.use('/concursos', concursosRoutes)
 
 // Error handler (deve ser o último middleware)
 app.use(errorHandler)
