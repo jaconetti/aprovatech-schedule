@@ -1,7 +1,11 @@
 /**
  * Algoritmo de geração de cronograma de estudos
  * Distribui as disciplinas de forma equilibrada ao longo do período
+ * e insere itens de pausa (Pomodoro) entre os blocos de foco.
  */
+
+export const BREAK_SHORT = 'Pausa Curta'
+export const BREAK_LONG  = 'Pausa Longa'
 
 interface GenerateScheduleParams {
   planId: string
@@ -24,56 +28,61 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
   const { planId, disciplines, dailyHours, startDate, endDate } = params
   const items: ScheduleItem[] = []
 
-  // Calcular total de dias úteis disponíveis (seg–sex)
+  // Total de dias úteis (seg–sex)
   const totalDays = countWeekdays(startDate, endDate)
 
-  // Quantos Pomodoros cabem por dia (contando pausas reais)
+  // Pomodoros que cabem por dia (simulando pausas reais)
   const blocksPerDay = pomodoroBlocksForHours(dailyHours)
 
-  // Blocos por disciplina distribuídos igualmente
+  // Quota de blocos por disciplina
   const blocksPerDiscipline = Math.floor((blocksPerDay * totalDays) / disciplines.length)
 
-  // Distribuir blocos ao longo dos dias
   let currentDate = new Date(startDate)
   let disciplineIndex = 0
   const blocksAssigned: { [key: string]: number } = {}
+  disciplines.forEach(d => { blocksAssigned[d] = 0 })
 
-  disciplines.forEach(d => {
-    blocksAssigned[d] = 0
-  })
-
-  // Gerar cronograma
   while (currentDate <= endDate) {
-    // Pular fins de semana
     if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-      
-      // Distribuir blocos do dia entre as disciplinas
+      const dateStr = formatDate(currentDate)
+      let pomodoroInDay = 0
+
       for (let i = 0; i < blocksPerDay; i++) {
         const discipline = disciplines[disciplineIndex]
-        
-        // Verificar se a disciplina ainda precisa de blocos
+
         if (blocksAssigned[discipline] < blocksPerDiscipline) {
+          // Bloco de foco (Pomodoro)
           items.push({
             plan_id: planId,
             discipline,
             topic: `Bloco ${blocksAssigned[discipline] + 1}`,
-            scheduled_date: formatDate(currentDate),
+            scheduled_date: dateStr,
             duration_minutes: 25,
-            completed: false
+            completed: false,
           })
-          
           blocksAssigned[discipline]++
+          pomodoroInDay++
+
+          // Inserir pausa após cada Pomodoro, exceto o último do dia
+          if (i < blocksPerDay - 1) {
+            const isLongBreak = pomodoroInDay % 4 === 0
+            items.push({
+              plan_id: planId,
+              discipline: isLongBreak ? BREAK_LONG : BREAK_SHORT,
+              topic: isLongBreak ? '15 min de descanso' : '5 min de descanso',
+              scheduled_date: dateStr,
+              duration_minutes: isLongBreak ? 15 : 5,
+              completed: false,
+            })
+          }
         }
-        
-        // Rotacionar para próxima disciplina
+
         disciplineIndex = (disciplineIndex + 1) % disciplines.length
       }
     }
-    
-    // Próximo dia
+
     currentDate.setDate(currentDate.getDate() + 1)
-    
-    // Verificar se todas as disciplinas atingiram o objetivo
+
     const allComplete = disciplines.every(d => blocksAssigned[d] >= blocksPerDiscipline)
     if (allComplete) break
   }
@@ -82,10 +91,8 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
 }
 
 /**
- * Calcular quantos Pomodoros (blocos de 25 min) cabem no orçamento diário
- * considerando pausas curtas (5 min) após cada Pomodoro e pausa longa (15 min)
- * a cada 4 Pomodoros. Um Pomodoro "conta" se ele COMEÇA dentro do orçamento,
- * mesmo que as pausas finais ultrapassem levemente (comportamento esperado).
+ * Conta quantos Pomodoros (25 min) COMEÇAM dentro do orçamento diário,
+ * simulando pausas curtas (5 min) e longa (15 min a cada 4º Pomodoro).
  */
 function pomodoroBlocksForHours(dailyHours: number): number {
   const totalMinutes = dailyHours * 60
@@ -94,42 +101,31 @@ function pomodoroBlocksForHours(dailyHours: number): number {
 
   while (elapsed < totalMinutes) {
     count++
-    elapsed += 25 // foco
+    elapsed += 25
     if (count % 4 === 0) {
-      elapsed += 15 // pausa longa
+      elapsed += 15
     } else {
-      elapsed += 5  // pausa curta
+      elapsed += 5
     }
   }
 
   return count
 }
 
-/**
- * Contar dias úteis (seg-sex) entre duas datas
- */
 function countWeekdays(startDate: Date, endDate: Date): number {
   let count = 0
   const current = new Date(startDate)
-  
   while (current <= endDate) {
-    const dayOfWeek = current.getDay()
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      count++
-    }
+    const day = current.getDay()
+    if (day !== 0 && day !== 6) count++
     current.setDate(current.getDate() + 1)
   }
-  
   return count
 }
 
-/**
- * Formatar data para YYYY-MM-DD
- */
 function formatDate(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
-
