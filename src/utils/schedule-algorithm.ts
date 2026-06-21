@@ -24,28 +24,20 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
   const { planId, disciplines, dailyHours, startDate, endDate } = params
   const items: ScheduleItem[] = []
 
-  // Calcular total de dias disponíveis (excluindo fins de semana)
+  // Calcular total de dias úteis disponíveis (seg–sex)
   const totalDays = countWeekdays(startDate, endDate)
-  
-  // Horas totais disponíveis
-  const totalHours = totalDays * dailyHours
-  
-  // Distribuir horas por disciplina (equilibrado)
-  const hoursPerDiscipline = totalHours / disciplines.length
-  
-  // Converter para minutos (mais fácil de dividir)
-  const minutesPerDiscipline = hoursPerDiscipline * 60
-  
-  // Dividir em blocos de estudo (Pomodoro: 25min estudo + 5min pausa)
-  const blockDuration = 25 // minutos por bloco de estudo
-  const blocksPerDiscipline = Math.floor(minutesPerDiscipline / blockDuration)
+
+  // Quantos Pomodoros cabem por dia (contando pausas reais)
+  const blocksPerDay = pomodoroBlocksForHours(dailyHours)
+
+  // Blocos por disciplina distribuídos igualmente
+  const blocksPerDiscipline = Math.floor((blocksPerDay * totalDays) / disciplines.length)
 
   // Distribuir blocos ao longo dos dias
   let currentDate = new Date(startDate)
   let disciplineIndex = 0
-  let blocksAssigned: { [key: string]: number } = {}
-  
-  // Inicializar contador de blocos por disciplina
+  const blocksAssigned: { [key: string]: number } = {}
+
   disciplines.forEach(d => {
     blocksAssigned[d] = 0
   })
@@ -54,8 +46,6 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
   while (currentDate <= endDate) {
     // Pular fins de semana
     if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-      // Quantos blocos de 25min cabem nas horas diárias?
-      const blocksPerDay = Math.floor((dailyHours * 60) / 25)
       
       // Distribuir blocos do dia entre as disciplinas
       for (let i = 0; i < blocksPerDay; i++) {
@@ -68,7 +58,7 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
             discipline,
             topic: `Bloco ${blocksAssigned[discipline] + 1}`,
             scheduled_date: formatDate(currentDate),
-            duration_minutes: blockDuration,
+            duration_minutes: 25,
             completed: false
           })
           
@@ -89,6 +79,30 @@ export function generateSchedule(params: GenerateScheduleParams): ScheduleItem[]
   }
 
   return items
+}
+
+/**
+ * Calcular quantos Pomodoros (blocos de 25 min) cabem no orçamento diário
+ * considerando pausas curtas (5 min) após cada Pomodoro e pausa longa (15 min)
+ * a cada 4 Pomodoros. Um Pomodoro "conta" se ele COMEÇA dentro do orçamento,
+ * mesmo que as pausas finais ultrapassem levemente (comportamento esperado).
+ */
+function pomodoroBlocksForHours(dailyHours: number): number {
+  const totalMinutes = dailyHours * 60
+  let elapsed = 0
+  let count = 0
+
+  while (elapsed < totalMinutes) {
+    count++
+    elapsed += 25 // foco
+    if (count % 4 === 0) {
+      elapsed += 15 // pausa longa
+    } else {
+      elapsed += 5  // pausa curta
+    }
+  }
+
+  return count
 }
 
 /**
