@@ -27,7 +27,9 @@ export async function createStudyPlan(
       daily_hours,
       start_date,
       end_date,
-      disciplines
+      disciplines,
+      tipo = 'rotativo',
+      day_disciplines,
     } = req.body
 
     // Validações
@@ -80,7 +82,9 @@ export async function createStudyPlan(
       disciplines,
       dailyHours: daily_hours,
       startDate: new Date(start_date),
-      endDate: new Date(end_date)
+      endDate: new Date(end_date),
+      tipo: tipo === 'predefinido' ? 'predefinido' : 'rotativo',
+      dayDisciplines: day_disciplines ?? undefined,
     })
 
     // Inserir itens do cronograma

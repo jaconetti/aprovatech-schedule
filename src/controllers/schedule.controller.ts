@@ -126,6 +126,7 @@ export async function createPlan(
       dailyHours: weekly_hours / 5,
       startDate: new Date(),
       endDate: new Date(target_date),
+      tipo: 'rotativo',
     })
 
     // Inserir itens do cronograma
